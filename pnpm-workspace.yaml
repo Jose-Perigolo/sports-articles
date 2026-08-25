@@ -1,8 +1,15 @@
 packages:
   - 'apps/*'
 
-# pnpm 10+ skips postinstall scripts unless a package is allowlisted here. Declared up front so a
-# reviewer's cold `pnpm install` never prints "Ignored build scripts".
+# pnpm skips dependency build scripts unless they are allowlisted, and a cold `pnpm install`
+# exits non-zero when it finds an unapproved one. pnpm 11 reads `allowBuilds` (a map); pnpm 10
+# reads `onlyBuiltDependencies` (a list). Both are declared so either major installs cleanly.
+allowBuilds:
+  '@tailwindcss/oxide': true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - esbuild

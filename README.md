@@ -31,7 +31,17 @@ If port 5432 is already taken on your machine (a native Postgres install, for ex
 
 ## Database migrations
 
-_Added in drill 02._
+The schema is never synchronised automatically (`synchronize` is `false` in every environment);
+every change goes through a generated migration.
+
+```bash
+pnpm --filter backend db:migrate        # apply pending migrations
+pnpm --filter backend db:revert         # roll the last one back
+pnpm --filter backend db:generate ./src/migrations/<Name>   # after changing an entity
+```
+
+Migrations are discovered by a glob resolved from the compiled location, so the same commands
+work against `src` (via `tsx`) and against `dist` after `pnpm --filter backend build`.
 
 ## Running
 

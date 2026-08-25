@@ -5,8 +5,23 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "echo '[backend] dev — implemented in drill 04'",
-    "build": "echo '[backend] build — implemented in drill 04'",
-    "typecheck": "echo '[backend] typecheck — implemented in drill 02'",
-    "lint": "eslint --no-error-on-unmatched-pattern ."
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint --no-error-on-unmatched-pattern .",
+    "typeorm": "tsx ./node_modules/typeorm/cli.js",
+    "db:generate": "pnpm run typeorm migration:generate -d src/data-source.ts",
+    "db:migrate": "pnpm run typeorm migration:run -d src/data-source.ts",
+    "db:revert": "pnpm run typeorm migration:revert -d src/data-source.ts"
+  },
+  "dependencies": {
+    "pg": "^8.23.0",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/pg": "^8.23.1",
+    "tsx": "^4.23.12",
+    "typescript": "^5.9.3"
   }
 }
