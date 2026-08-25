@@ -26,10 +26,9 @@ async function seed(): Promise<void> {
 
     await repository.save(rows);
 
-    const substituted = articles.filter((article) => article.imageSubstituted).length;
     console.log(
       `Seeded ${rows.length} sports articles from docs/data-example.csv ` +
-        `(${substituted} unreachable image URLs substituted).`,
+        `(topic-matched images from image-picks.ts).`,
     );
   } finally {
     await dataSource.destroy();

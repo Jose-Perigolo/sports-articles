@@ -134,20 +134,29 @@ carrying `extensions.field` so the client can attach the message to the right in
 
 ## Architecture decisions
 
-- **The example dataset is used as supplied, with 17 unreachable image URLs substituted.**
-  `docs/data-example.csv` provides 30 rows; titles, content and `createdAt` are seeded exactly
-  as given, including the truncated single-sentence bodies, because the copy describes real
-  clubs and athletes and inventing detail there would be worse than leaving it short. The one
-  repair is to the images: 17 of the 30 Unsplash URLs answer `404`, so those rows get a
-  deterministic `picsum.photos` URL keyed on the article slug instead. The affected source ids
-  are **4, 5, 9, 10, 11, 12, 15, 16, 18, 19, 21, 23, 26, 27, 28, 29 and 30**; the remaining 13
-  are kept byte-for-byte. Verified by ranged `GET` requests (`curl -r 0-2047`) rather than
-  `HEAD`, which can report a false negative on that host, and re-run a second time to rule out
-  transient failures — the 13 survivors return `206` with `image/jpeg` bodies of 1.6-6.2 MB.
-  The substitution list lives in `apps/backend/src/example-data.ts`. Two source rows (ids 7 and 22) legitimately share an image; that is left as-is. The CSV's integer ids are treated as
-  ordering hints, not keys — rows get generated uuids — and because `createdAt` is date-only,
-  22 of the 30 rows share a date with another row, which is what the `createdAt DESC, id DESC`
-  ordering in `articles` exists to make total.
+- **The example dataset is seeded verbatim, except for the images.** `docs/data-example.csv`
+  provides 30 rows. Titles, content and `createdAt` are stored exactly as supplied, including
+  the truncated single-sentence bodies — the copy describes real clubs and athletes, so
+  extending it would mean inventing quotes and results.
+
+  The supplied `imageUrl` values were not usable: 17 of the 30 answer `404` (verified by ranged
+  `GET` requests, `curl -r 0-2047`, rather than `HEAD`, which can report a false negative on
+  that host, and re-run to rule out transient failures), and all 30 were topically unrelated to
+  the article they belonged to. `imageUrl` is display data rather than part of the record, so it
+  is replaced wholesale with topic-matched photographs resolved once at author time and pinned
+  in `apps/backend/src/image-picks.ts`. Each was chosen by matching the photo's own
+  `alt_description` against the article's sport; that description is kept alongside the URL as
+  provenance. The application needs no Unsplash credentials and makes no request to Unsplash —
+  `images.unsplash.com` serves the URLs unauthenticated, exactly as the fixture's originals did.
+  The originals are preserved unmodified in the committed CSV.
+
+  The replacements also carry sizing parameters, which the originals did not: 66-348 KB each
+  instead of 1.6-6.2 MB.
+
+  Two further notes on the fixture: its integer ids are treated as ordering hints, not keys, so
+  rows get generated uuids; and because `createdAt` is date-only, 22 of the 30 rows share a date
+  with another row, which is exactly what the `createdAt DESC, id DESC` ordering in `articles`
+  exists to make total.
 
 - **TypeORM, per the brief's recommendation — and `@DeleteDateColumn` is what earns it.**
   `deleteArticle` calls `repository.softDelete(id)`, and every default `find`/`findOneBy`

@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
+import { IMAGE_PICKS } from './image-picks';
 
 export interface ExampleArticle {
   sourceId: number;
@@ -7,22 +8,11 @@ export interface ExampleArticle {
   content: string;
   createdAt: Date;
   imageUrl: string;
-  imageSubstituted: boolean;
 }
 
 // Three levels up from either src/ (tsx) or dist/ (tsc), both being one level below the
 // package root, so the same path resolves before and after a build.
 const CSV_PATH = path.join(__dirname, '..', '..', '..', 'docs', 'data-example.csv');
-
-/**
- * Source ids whose supplied Unsplash URL answers 404. Checked twice with ranged GET requests
- * (`curl -r 0-2047`) rather than HEAD, which can report a false negative on this host; the
- * remaining 13 return 206 with image/jpeg bodies of 1.6-6.2 MB. These 17 get a deterministic
- * picsum.photos URL instead — the only alteration made to the supplied data.
- */
-const UNREACHABLE_IMAGE_SOURCE_IDS = new Set([
-  4, 5, 9, 10, 11, 12, 15, 16, 18, 19, 21, 23, 26, 27, 28, 29, 30,
-]);
 
 function parseCsv(text: string): string[][] {
   const rows: string[][] = [];
@@ -65,14 +55,6 @@ function parseCsv(text: string): string[][] {
   return rows;
 }
 
-export function slugify(title: string): string {
-  return title
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
-}
-
 export function loadExampleArticles(): ExampleArticle[] {
   const [header, ...rows] = parseCsv(readFileSync(CSV_PATH, 'utf8'));
   if (!header) throw new Error(`${CSV_PATH} is empty`);
@@ -87,7 +69,7 @@ export function loadExampleArticles(): ExampleArticle[] {
   const titleColumn = columnOf('title');
   const contentColumn = columnOf('content');
   const createdAtColumn = columnOf('createdAt');
-  const imageUrlColumn = columnOf('imageUrl');
+  columnOf('imageUrl'); // still required to be present in the fixture
 
   const articles = rows
     .filter((row) => row.some((value) => value.trim() !== ''))
@@ -102,17 +84,17 @@ export function loadExampleArticles(): ExampleArticle[] {
         throw new Error(`Row ${sourceId} has an unparseable createdAt: ${row[createdAtColumn]}`);
       }
 
-      const imageSubstituted = UNREACHABLE_IMAGE_SOURCE_IDS.has(sourceId);
+      // imageUrl is taken from image-picks.ts, not from the fixture: see that file for why
+      // the supplied URLs are not usable. A row without a pick is a bug, not a fallback.
+      const pick = IMAGE_PICKS[sourceId];
+      if (!pick) throw new Error(`Row ${sourceId} has no image pick in image-picks.ts`);
 
       return {
         sourceId,
         title,
         content: row[contentColumn],
         createdAt,
-        imageUrl: imageSubstituted
-          ? `https://picsum.photos/seed/${slugify(title)}/800/450`
-          : row[imageUrlColumn],
-        imageSubstituted,
+        imageUrl: pick.imageUrl,
       };
     });
 
