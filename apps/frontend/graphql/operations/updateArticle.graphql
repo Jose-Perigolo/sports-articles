@@ -1,0 +1,5 @@
+mutation UpdateArticle($id: ID!, $input: ArticleInput!) {
+  updateArticle(id: $id, input: $input) {
+    ...ArticleFields
+  }
+}

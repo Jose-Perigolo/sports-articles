@@ -1,0 +1,5 @@
+query Articles($limit: Int, $offset: Int) {
+  articles(limit: $limit, offset: $offset) {
+    ...ArticleFields
+  }
+}

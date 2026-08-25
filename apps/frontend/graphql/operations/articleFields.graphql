@@ -1,0 +1,7 @@
+fragment ArticleFields on SportsArticle {
+  id
+  title
+  content
+  imageUrl
+  createdAt
+}

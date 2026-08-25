@@ -1,0 +1,5 @@
+query Article($id: ID!) {
+  article(id: $id) {
+    ...ArticleFields
+  }
+}
