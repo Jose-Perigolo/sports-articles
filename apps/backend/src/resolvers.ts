@@ -1,5 +1,7 @@
 import { GraphQLContext } from './context';
+import { notFound } from './errors';
 import { SportsArticleResponse, toArticleResponse } from './mappers';
+import { parseArticleInput } from './validation';
 
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 50;
@@ -15,6 +17,14 @@ interface ArticleArgs {
   id: string;
 }
 
+interface CreateArticleArgs {
+  input: unknown;
+}
+
+interface UpdateArticleArgs extends ArticleArgs {
+  input: unknown;
+}
+
 export const resolvers = {
   Query: {
     async articles(
@@ -28,7 +38,8 @@ export const resolvers = {
       const skip = Math.max(offset ?? 0, 0);
 
       const rows = await articles.find({
-        order: { createdAt: 'DESC' },
+        // id breaks ties so offset pagination can never repeat or skip a row.
+        order: { createdAt: 'DESC', id: 'DESC' },
         take,
         skip,
       });
@@ -48,6 +59,45 @@ export const resolvers = {
 
       const article = await articles.findOneBy({ id });
       return article ? toArticleResponse(article) : null;
+    },
+  },
+
+  Mutation: {
+    async createArticle(
+      _parent: unknown,
+      { input }: CreateArticleArgs,
+      { articles }: GraphQLContext,
+    ): Promise<SportsArticleResponse> {
+      const values = parseArticleInput(input);
+      const saved = await articles.save(articles.create(values));
+      return toArticleResponse(saved);
+    },
+
+    async updateArticle(
+      _parent: unknown,
+      { id, input }: UpdateArticleArgs,
+      { articles }: GraphQLContext,
+    ): Promise<SportsArticleResponse> {
+      const values = parseArticleInput(input);
+
+      const article = UUID_PATTERN.test(id) ? await articles.findOneBy({ id }) : null;
+      if (!article) throw notFound(`No article with id ${id}`);
+
+      const saved = await articles.save(articles.merge(article, values));
+      return toArticleResponse(saved);
+    },
+
+    async deleteArticle(
+      _parent: unknown,
+      { id }: ArticleArgs,
+      { articles }: GraphQLContext,
+    ): Promise<boolean> {
+      if (!UUID_PATTERN.test(id)) return false;
+
+      // softDelete only touches rows that are still live, so deleting twice reports
+      // false on the second call rather than throwing.
+      const result = await articles.softDelete(id);
+      return result.affected === 1;
     },
   },
 };

@@ -80,4 +80,12 @@ image for the same article.
 
 ## Architecture decisions
 
-_Added in drill 12._
+_Expanded in drill 12._
+
+- **`imageUrl` is restricted to `http`/`https` at the API, which is what lets the frontend's
+  `images.remotePatterns` stay permissive about the host.** The two are a pair. `next/image`
+  answers 400 from its optimizer for any host missing from `remotePatterns`, so a list that
+  renders perfectly from the seed would break on the first article a user creates with an image
+  from anywhere else — the fix is to allow any host over https. That is only safe because the
+  backend already rejects every other scheme (`javascript:`, `data:`, `ftp:`, `file:`), which a
+  bare URL parse would happily accept.
