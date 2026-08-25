@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.next/
+out/
+coverage/
+
+.env
+.env.local
+.env.*.local
+
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+.DS_Store
+
+# Generated GraphQL types are committed on purpose (see apps/frontend/codegen.ts):
+# a reviewer must be able to build after a cold `pnpm install`, with no backend running.

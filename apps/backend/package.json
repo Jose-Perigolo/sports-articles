@@ -1,0 +1,12 @@
+{
+  "name": "backend",
+  "private": true,
+  "version": "0.0.0",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "echo '[backend] dev — implemented in drill 04'",
+    "build": "echo '[backend] build — implemented in drill 04'",
+    "typecheck": "echo '[backend] typecheck — implemented in drill 02'",
+    "lint": "eslint --no-error-on-unmatched-pattern ."
+  }
+}

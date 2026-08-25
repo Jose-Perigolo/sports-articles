@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.next/
+coverage/
+pnpm-lock.yaml
+apps/frontend/graphql/generated/
+
+# Hand-authored source material — deliberate wrapping, not ours to reformat.
+CLAUDE.md
+docs/

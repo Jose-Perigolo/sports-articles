@@ -1,0 +1,11 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "echo '[frontend] dev — implemented in drill 06'",
+    "build": "echo '[frontend] build — implemented in drill 06'",
+    "typecheck": "echo '[frontend] typecheck — implemented in drill 06'",
+    "lint": "eslint --no-error-on-unmatched-pattern ."
+  }
+}
