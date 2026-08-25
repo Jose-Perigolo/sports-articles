@@ -82,6 +82,13 @@ image for the same article.
 
 _Expanded in drill 12._
 
+- **The frontend zod schema duplicates the backend's rules rather than importing them.**
+  `apps/frontend/lib/articleSchema.ts` mirrors `apps/backend/src/validation.ts` — same length
+  limit, same messages, same http(s) restriction — and the server re-validates everything
+  regardless, so the duplicate is a UX affordance rather than the enforcement point. At scale
+  this belongs in a `packages/shared-validation` workspace package consumed by both apps; with
+  two consumers and one schema, that would buy build-order complexity for no benefit here.
+
 - **`imageUrl` is restricted to `http`/`https` at the API, which is what lets the frontend's
   `images.remotePatterns` stay permissive about the host.** The two are a pair. `next/image`
   answers 400 from its optimizer for any host missing from `remotePatterns`, so a list that

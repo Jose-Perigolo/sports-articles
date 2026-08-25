@@ -12,10 +12,13 @@
   },
   "dependencies": {
     "@apollo/client": "^3.14.1",
+    "@hookform/resolvers": "^5.9.1",
     "graphql": "^16.14.2",
     "next": "15.5.23",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "react-hook-form": "^7.86.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.7",
