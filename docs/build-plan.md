@@ -80,13 +80,19 @@ DataSource, seeds, destroys it.
 
 Verify: run seed twice, `SELECT count(*)` is 20 both times.
 
-## Drill 04 — Apollo Server v4 + Express + SDL
+## Drill 04 — Apollo Server v4 + Express + SDL + read path
+
+Transport plus the read path, so the drill ends in something you can actually query.
 
 - SDL lives at **`apps/backend/schema.graphql`** — the package root, not `src/schema/`.
   Loaded with `readFileSync(path.join(__dirname, '../schema.graphql'), 'utf8')`, which
   resolves identically from `src/` under tsx and from `dist/` after `tsc` (both are one level
   below the package root). This removes the "readFileSync breaks after compile" trap by
-  construction instead of patching it later.
+  construction instead of patching it later. `src/env.ts` already uses the same shape for
+  `../.env`.
+- The **full** SDL lands here, mutations included — drill 07's codegen reads this file, and a
+  schema that grows between drills means regenerating twice. Only the mutation *resolvers*
+  wait for drill 05.
 - `src/server.ts`: `import 'reflect-metadata'` first, `await dataSource.initialize()` before
   `app.listen`, then Express + `expressMiddleware` from `@apollo/server/express4`, with
   `cors()` and `express.json()` **before** the middleware. CORS is required — the browser calls
@@ -97,27 +103,36 @@ Verify: run seed twice, `SELECT count(*)` is 20 both times.
   module-level repository singleton.
 - Schema mirrors the entity exactly, with `articles(limit: Int, offset: Int): [SportsArticle!]!`
   and ISO-string dates (`createdAt: String`, `deletedAt: String`).
-
-Verify: `pnpm --filter backend dev`, hit `/graphql` with `{ articles(limit:2){ id title } }`.
-
-## Drill 05 — Resolvers
-
 - `articles`: `repo.find({ order: { createdAt: 'DESC' }, take: Math.min(limit ?? 10, 50),
   skip: offset ?? 0 })`. Soft-deleted rows are excluded by TypeORM automatically — do not add a
-  manual filter. Cap the limit: an unbounded client-supplied `limit` is exactly the kind of
-  thing that gets asked about in the interview.
+  manual filter. **The cap ships with the resolver**, not as a later patch: an unbounded
+  client-supplied `limit` is exactly the kind of thing that gets asked about in the interview.
 - `article(id)`: `repo.findOneBy({ id })` → `null` for missing *or* soft-deleted, same code path.
+- Map entity `Date` → ISO string in the field resolvers (or a small mapper); never leak `Date`
+  objects into the response.
+
+Verify: `pnpm --filter backend dev`, then `{ articles(limit:2){ id title createdAt } }` returns
+two seeded articles with ISO-string dates, `articles(limit: 999)` returns at most 50, and
+`article(id:"<seeded id>")` resolves while a random uuid returns `null`.
+
+## Drill 05 — Mutations
+
 - `createArticle` / `updateArticle`: validate with zod; on failure throw `GraphQLError` with
   `extensions.code = 'BAD_USER_INPUT'` and `extensions.field`, so the frontend can attach the
   message to the right input. `updateArticle` on a missing/deleted id → `NOT_FOUND`.
 - `deleteArticle`: `repo.softDelete(id)`, return `result.affected === 1`. An already-deleted id
   returns `false` rather than throwing.
-- Map entity `Date` → ISO string in the field resolvers (or a small mapper); never leak `Date`
-  objects into the response.
+- Optional, decide here: `ORDER BY "createdAt" DESC, "id" DESC` in `articles`. Not a bug you
+  will hit — the seed has 20 distinct timestamps and UI-created rows get microsecond-resolution
+  `now()` — but it makes the ordering total rather than merely-probably-total, which is a
+  one-sentence answer when an interviewer asks how offset pagination behaves under ties. The
+  index is `(deletedAt, createdAt)`, so the third key is not index-served; irrelevant at this
+  size and not worth a second migration.
 
-Verify: exercise each operation in Apollo Sandbox, including a validation failure, then confirm
-a deleted article disappears from `articles` and returns `null` from `article(id)` while its row
-still exists in Postgres with `deletedAt` set.
+Verify: exercise every mutation in Apollo Sandbox, including a validation failure that returns
+`BAD_USER_INPUT`, then confirm a deleted article disappears from `articles` and returns `null`
+from `article(id)` while its row still exists in Postgres with `deletedAt` set — the check that
+proves soft delete rather than delete, and the one drill 04 could not run yet.
 
 ## Drill 06 — Frontend scaffold + Apollo Client
 

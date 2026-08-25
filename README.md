@@ -45,7 +45,14 @@ work against `src` (via `tsx`) and against `dist` after `pnpm --filter backend b
 
 ## Running
 
-_Added in drills 04 and 06._
+```bash
+pnpm --filter backend dev     # http://localhost:4000/graphql
+pnpm --filter frontend dev    # http://localhost:3000
+```
+
+The backend serves Apollo Sandbox at `/graphql` in development and a `GET /health` endpoint.
+If Postgres is not running, the backend exits with the commands needed to start it rather than
+a connection stack trace.
 
 ## Seeding
 

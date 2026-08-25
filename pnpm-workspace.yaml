@@ -5,12 +5,14 @@ packages:
 # exits non-zero when it finds an unapproved one. pnpm 11 reads `allowBuilds` (a map); pnpm 10
 # reads `onlyBuiltDependencies` (a list). Both are declared so either major installs cleanly.
 allowBuilds:
+  '@apollo/protobufjs': true
   '@tailwindcss/oxide': true
   esbuild: true
   sharp: true
   unrs-resolver: true
 
 onlyBuiltDependencies:
+  - '@apollo/protobufjs'
   - '@tailwindcss/oxide'
   - esbuild
   - sharp
