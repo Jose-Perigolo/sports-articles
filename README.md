@@ -87,7 +87,29 @@ article slug, so the same article always gets the same image.
 | `pnpm lint`                         | ESLint across the workspace (warnings fail) |
 | `pnpm format` / `pnpm format:check` | Prettier write / check                      |
 | `pnpm typecheck`                    | Type-check every package                    |
+| `pnpm test`                         | Backend resolver tests                      |
 | `pnpm --filter frontend codegen`    | Regenerate typed hooks from the SDL         |
+
+## Tests
+
+```bash
+pnpm test        # backend resolver tests (vitest)
+```
+
+The suite covers the two behaviours most worth pinning down: validation failures returning
+`BAD_USER_INPUT` with the right `extensions.field`, and soft delete — a deleted article absent
+from `articles`, `null` from `article(id)`, and still present in Postgres with `deletedAt` set.
+
+Tests run against a real database rather than a mocked repository, because soft-delete exclusion
+is TypeORM's behaviour: a mock would only assert our own stub. Locally the suite creates and uses
+a `<database>_test` sibling so it never touches the rows you are looking at in the browser; set
+`TEST_DATABASE_URL` to point it somewhere else.
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs install, lint, typecheck, migrations, seed, build and the tests
+against a `services: postgres` container — which also proves the migration applies cleanly in an
+environment neither the author nor the reviewer controls.
 
 ## GraphQL API
 
