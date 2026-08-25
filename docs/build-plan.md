@@ -160,7 +160,7 @@ Verify: `pnpm --filter frontend dev` renders a placeholder page, `pnpm lint`/`bu
   a running server; a reviewer doing a cold `pnpm install` has nothing listening on :4000).
 - `typescript`, `typescript-operations`, `typescript-react-apollo` (with `withHooks`, so pages
   get both `XDocument` for `client.query` in SSR and `useX` hooks on the client).
-- `codegen` script wired as `prebuild` on the frontend; generated output committed.
+- `codegen` chained explicitly: `"build": "pnpm codegen && next build"`. **Not** a `prebuild` hook — pnpm has not run pre/post scripts by default since v7 (`enable-pre-post-scripts` is unset), so the hook may never fire and codegen skipping silently is worse than a longer build line. Generated output is committed.
 
 Verify: `pnpm --filter frontend codegen && pnpm --filter frontend build`.
 

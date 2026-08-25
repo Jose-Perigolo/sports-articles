@@ -54,6 +54,7 @@ Execution order lives in `docs/build-plan.md` — follow it one drill at a time.
 - Create/edit forms include `title`, `content`, and optional `imageUrl` — the model has `imageUrl`, so user-created articles shouldn't be the only ones without a thumbnail.
 - Every mutation handles loading/error state; GraphQL errors show near the form, never via `alert()`.
 - Delete uses `window.confirm`; on success, remove the item from the Apollo cache (`cache.evict` + `cache.gc()`) without a full page reload.
+- `fetchMore`'s offset is `data.articles.length`, never a page counter. Because the backend soft-deletes, removing an item shifts every later row down by one; a length-based offset self-corrects (client holds 9 → asks for offset 9 → gets the row that just became index 9), while `page * limit` would re-request a row already on screen. This is why delete and infinite scroll compose without extra bookkeeping.
 - List page paginates via the backend's `limit`/`offset` args: SSR the first 10, then `fetchMore` (IntersectionObserver sentinel plus a "Load more" fallback) for the rest — `hasMore` is false as soon as a page returns fewer than `limit` items, no extra connection type.
 
 ## Workflow
