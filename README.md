@@ -49,7 +49,17 @@ _Added in drills 04 and 06._
 
 ## Seeding
 
-_Added in drill 03._
+```bash
+pnpm --filter backend seed
+```
+
+Loads 20 sports articles. The command is idempotent: it clears the table first — including any
+rows deleted through the UI, which are soft-deleted rather than removed — so running it twice
+leaves 20 rows, not 40. `createdAt` is staggered six hours apart backwards from the run time, so
+the newest-first ordering is stable and the two pages after the first have something to show.
+
+Thumbnails come from `picsum.photos`, seeded by article slug, so every run produces the same
+image for the same article.
 
 ## Scripts
 

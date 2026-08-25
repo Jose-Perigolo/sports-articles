@@ -8,6 +8,7 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint --no-error-on-unmatched-pattern .",
+    "seed": "tsx src/seed.ts",
     "typeorm": "tsx ./node_modules/typeorm/cli.js",
     "db:generate": "pnpm run typeorm migration:generate -d src/data-source.ts",
     "db:migrate": "pnpm run typeorm migration:run -d src/data-source.ts",
