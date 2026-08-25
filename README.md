@@ -27,7 +27,7 @@ cp apps/frontend/.env.example apps/frontend/.env # NEXT_PUBLIC_GRAPHQL_URL
 docker compose up -d                            # Postgres 16, waits until healthy
 
 pnpm --filter backend db:migrate                # create the schema
-pnpm --filter backend seed                      # 20 sports articles
+pnpm --filter backend seed                      # 30 articles from docs/data-example.csv
 ```
 
 Each file is read by a different process — the root `.env` by Docker Compose,
@@ -73,10 +73,10 @@ Migrations are found through a glob built from `__dirname`, so the same commands
 pnpm --filter backend seed
 ```
 
-Loads 20 hand-written articles. Idempotent: it clears the table first — including rows deleted
-through the UI, which are soft-deleted rather than removed — so a second run leaves 20 rows, not 40. `createdAt` values are staggered six hours apart going backwards, so newest-first ordering is
-stable and there is more than one page to scroll. Thumbnails come from `picsum.photos` seeded by
-article slug, so the same article always gets the same image.
+Loads the 30 articles from `docs/data-example.csv` (see the note on that dataset under
+Architecture decisions). Idempotent: it clears the table first — including rows deleted
+through the UI, which are soft-deleted rather than removed — so a second run leaves 30 rows, not 60. `createdAt` comes from the CSV and is date-only, giving three full pages of 10 to scroll
+through.
 
 ## Scripts
 
@@ -133,6 +133,21 @@ carrying `extensions.field` so the client can attach the message to the right in
 `NOT_FOUND` (updating an article that is missing or already deleted).
 
 ## Architecture decisions
+
+- **The example dataset is used as supplied, with 17 unreachable image URLs substituted.**
+  `docs/data-example.csv` provides 30 rows; titles, content and `createdAt` are seeded exactly
+  as given, including the truncated single-sentence bodies, because the copy describes real
+  clubs and athletes and inventing detail there would be worse than leaving it short. The one
+  repair is to the images: 17 of the 30 Unsplash URLs answer `404`, so those rows get a
+  deterministic `picsum.photos` URL keyed on the article slug instead. The affected source ids
+  are **4, 5, 9, 10, 11, 12, 15, 16, 18, 19, 21, 23, 26, 27, 28, 29 and 30**; the remaining 13
+  are kept byte-for-byte. Verified by ranged `GET` requests (`curl -r 0-2047`) rather than
+  `HEAD`, which can report a false negative on that host, and re-run a second time to rule out
+  transient failures — the 13 survivors return `206` with `image/jpeg` bodies of 1.6-6.2 MB.
+  The substitution list lives in `apps/backend/src/example-data.ts`. Two source rows (ids 7 and 22) legitimately share an image; that is left as-is. The CSV's integer ids are treated as
+  ordering hints, not keys — rows get generated uuids — and because `createdAt` is date-only,
+  22 of the 30 rows share a date with another row, which is what the `createdAt DESC, id DESC`
+  ordering in `articles` exists to make total.
 
 - **TypeORM, per the brief's recommendation — and `@DeleteDateColumn` is what earns it.**
   `deleteArticle` calls `repository.softDelete(id)`, and every default `find`/`findOneBy`
