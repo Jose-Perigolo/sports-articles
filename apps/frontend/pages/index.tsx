@@ -92,7 +92,7 @@ export default function Home({ ssrError }: HomeProps) {
         <meta name="description" content="The latest sports reporting." />
       </Head>
 
-      <div className="mx-auto max-w-[900px] px-6 py-20 sm:py-24">
+      <div className="mx-auto max-w-[1200px] px-6 py-20 sm:py-24">
         <header className="mb-16 border-b border-rule pb-10">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-xl">
@@ -100,8 +100,8 @@ export default function Home({ ssrError }: HomeProps) {
                 Sports Articles
               </h1>
               <p className="mt-4 text-lg leading-relaxed text-muted">
-                <span className="text-emphasis">Sports Articles</span> — reporting from across the
-                sporting week, newest first.
+                Reporting from across the sporting week —{' '}
+                <span className="text-emphasis">newest first</span>.
               </p>
             </div>
             <Link
@@ -140,7 +140,7 @@ export default function Home({ ssrError }: HomeProps) {
           </p>
         ) : null}
 
-        <div className="grid gap-8 sm:grid-cols-2">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {articles.map((article) => (
             <ArticleCard
               key={article.id}

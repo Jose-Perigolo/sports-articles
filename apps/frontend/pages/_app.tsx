@@ -1,5 +1,6 @@
 import { ApolloProvider } from '@apollo/client';
 import type { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
 import { Inter } from 'next/font/google';
 import { SiteFooter } from '../components/SiteFooter';
 import { useApollo } from '../lib/apolloClient';
@@ -12,7 +13,10 @@ const inter = Inter({
   fallback: ['ui-sans-serif', 'system-ui', 'sans-serif'],
 });
 
+const WIDE_ROUTES = new Set(['/']);
+
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
   const client = useApollo(pageProps as Record<string, unknown>);
 
   return (
@@ -21,7 +25,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <main className="flex-1">
           <Component {...pageProps} />
         </main>
-        <SiteFooter />
+        <SiteFooter wide={WIDE_ROUTES.has(router.pathname)} />
       </div>
     </ApolloProvider>
   );

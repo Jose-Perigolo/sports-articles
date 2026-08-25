@@ -1,7 +1,12 @@
-export function SiteFooter() {
+export interface SiteFooterProps {
+  /** The index scans a wide grid; every other page is running text on a narrow measure. */
+  wide?: boolean;
+}
+
+export function SiteFooter({ wide = false }: SiteFooterProps) {
   return (
     <footer className="border-t border-rule">
-      <div className="mx-auto w-full max-w-[900px] px-6 py-10">
+      <div className={`mx-auto w-full px-6 py-10 ${wide ? 'max-w-[1200px]' : 'max-w-[42rem]'}`}>
         <p className="text-sm text-muted">
           <a
             href="https://github.com/Jose-Perigolo/sports-articles"
