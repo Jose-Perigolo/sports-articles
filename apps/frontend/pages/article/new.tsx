@@ -37,11 +37,16 @@ export default function NewArticlePage() {
         <title>New article — Sports Articles</title>
       </Head>
 
-      <div className="mx-auto max-w-3xl px-6 py-10">
-        <Link href="/" className="text-sm text-slate-600 hover:underline">
+      <div className="mx-auto max-w-[42rem] px-6 py-20 sm:py-24">
+        <Link
+          href="/"
+          className="rounded-sm text-sm text-muted underline-offset-4 transition-colors hover:text-emphasis hover:underline focus-visible:ring-2 focus-visible:ring-emphasis focus-visible:outline-none"
+        >
           ← All articles
         </Link>
-        <h1 className="mt-6 mb-8 text-3xl font-semibold tracking-tight">New article</h1>
+        <h1 className="mt-10 mb-12 text-4xl font-semibold tracking-tight text-emphasis">
+          New article
+        </h1>
 
         <ArticleForm
           defaultValues={{ title: '', content: '', imageUrl: '' }}

@@ -92,24 +92,31 @@ export default function Home({ ssrError }: HomeProps) {
         <meta name="description" content="The latest sports reporting." />
       </Head>
 
-      <div className="mx-auto max-w-6xl px-6 py-10">
-        <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight">Sports Articles</h1>
-            <p className="mt-1 text-slate-600">The latest reporting, newest first.</p>
+      <div className="mx-auto max-w-[900px] px-6 py-20 sm:py-24">
+        <header className="mb-16 border-b border-rule pb-10">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-xl">
+              <h1 className="text-4xl font-semibold tracking-tight text-emphasis">
+                Sports Articles
+              </h1>
+              <p className="mt-4 text-lg leading-relaxed text-muted">
+                <span className="text-emphasis">Sports Articles</span> — reporting from across the
+                sporting week, newest first.
+              </p>
+            </div>
+            <Link
+              href="/article/new"
+              className="inline-flex bg-emphasis px-5 py-2.5 text-sm font-medium text-surface transition-colors hover:bg-ink focus-visible:ring-2 focus-visible:ring-emphasis focus-visible:ring-offset-2 focus-visible:outline-none"
+            >
+              Create article
+            </Link>
           </div>
-          <Link
-            href="/article/new"
-            className="inline-flex rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
-          >
-            Create article
-          </Link>
         </header>
 
         {failed ? (
           <p
             role="alert"
-            className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+            className="border border-danger/30 bg-surface px-4 py-3 text-sm text-danger"
           >
             {LOAD_FAILED_MESSAGE}
           </p>
@@ -118,22 +125,22 @@ export default function Home({ ssrError }: HomeProps) {
         {deleteError ? (
           <p
             role="alert"
-            className="mb-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+            className="mb-8 border border-danger/30 bg-surface px-4 py-3 text-sm text-danger"
           >
             {deleteError}
           </p>
         ) : null}
 
         {!failed && articles.length === 0 ? (
-          <p className="rounded-md border border-slate-200 bg-white px-4 py-8 text-center text-slate-600">
+          <p className="border border-rule bg-surface px-4 py-16 text-center text-muted">
             No articles yet.{' '}
-            <Link href="/article/new" className="underline">
+            <Link href="/article/new" className="text-emphasis underline underline-offset-4">
               Write the first one.
             </Link>
           </p>
         ) : null}
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-2">
           {articles.map((article) => (
             <ArticleCard
               key={article.id}
@@ -145,12 +152,12 @@ export default function Home({ ssrError }: HomeProps) {
         </div>
 
         {hasMore ? (
-          <div ref={sentinel} className="mt-10 flex justify-center">
+          <div ref={sentinel} className="mt-16 flex justify-center">
             <button
               type="button"
               onClick={() => void loadMore()}
               disabled={loadingMore}
-              className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-60"
+              className="border border-rule bg-surface px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-emphasis hover:text-emphasis focus-visible:ring-2 focus-visible:ring-emphasis focus-visible:outline-none disabled:opacity-60"
             >
               {loadingMore ? 'Loading…' : 'Load more'}
             </button>

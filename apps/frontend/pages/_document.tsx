@@ -7,7 +7,7 @@ export default function Document() {
         {/* Without an explicit icon the browser requests /favicon.ico on every page and logs a 404. */}
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </Head>
-      <body className="bg-slate-50 text-slate-900 antialiased">
+      <body className="bg-ground text-ink antialiased">
         <Main />
         <NextScript />
       </body>

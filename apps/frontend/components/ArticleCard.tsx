@@ -17,53 +17,55 @@ export function ArticleCard({ article, onDelete, deleting }: ArticleCardProps) {
     <article
       data-testid="article-card"
       data-article-id={article.id}
-      className="flex flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:shadow-md"
+      className="flex flex-col overflow-hidden border border-rule bg-surface"
     >
-      <div className="relative aspect-[16/9] bg-slate-100">
+      <div className="relative aspect-[16/9] bg-ground">
         {article.imageUrl ? (
           <Image
             src={article.imageUrl}
             alt=""
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            sizes="(max-width: 640px) 100vw, 440px"
             className="object-cover"
           />
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <h2 className="leading-snug font-semibold">
-          <Link
-            href={`/article/${article.id}`}
-            className="hover:underline focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:outline-none"
-          >
-            {article.title}
-          </Link>
-        </h2>
-
+      <div className="flex flex-1 flex-col gap-3 p-6">
         {published ? (
           <time
             dateTime={article.createdAt ?? undefined}
-            className="text-xs tracking-wide text-slate-500 uppercase"
+            className="text-xs tracking-[0.08em] text-muted uppercase"
           >
             {published}
           </time>
         ) : null}
 
-        <p className="line-clamp-3 text-sm text-slate-600">{excerpt}</p>
+        <h2 className="text-lg leading-snug font-semibold text-emphasis">
+          <Link
+            href={`/article/${article.id}`}
+            className="rounded-sm hover:underline hover:underline-offset-4 focus-visible:ring-2 focus-visible:ring-emphasis focus-visible:outline-none"
+          >
+            {article.title}
+          </Link>
+        </h2>
 
-        <div className="mt-auto flex items-center gap-2 pt-3">
+        <p className="line-clamp-3 text-sm leading-relaxed text-muted">{excerpt}</p>
+
+        <div className="mt-auto flex items-center gap-5 pt-5">
           <Link
             href={`/article/${article.id}/edit`}
-            className="inline-flex rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:outline-none"
+            className="inline-flex border border-rule px-3.5 py-1.5 text-sm font-medium text-ink transition-colors hover:border-emphasis hover:text-emphasis focus-visible:ring-2 focus-visible:ring-emphasis focus-visible:outline-none"
           >
             Edit
           </Link>
+          {/* Quiet by default, red only on hover and focus: destructive, not decorative.
+              It stays a permanently visible, text-labelled, focusable control. */}
           <button
             type="button"
             onClick={() => onDelete(article)}
             disabled={deleting}
-            className="inline-flex rounded-md border border-red-200 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-700 focus-visible:outline-none disabled:opacity-60"
+            className="-mx-1 rounded-sm px-1 py-1.5 text-sm font-medium text-muted underline-offset-4 transition-colors hover:text-danger hover:underline focus-visible:text-danger focus-visible:ring-2 focus-visible:ring-danger focus-visible:outline-none disabled:opacity-60"
           >
             {deleting ? 'Deleting…' : 'Delete'}
           </button>

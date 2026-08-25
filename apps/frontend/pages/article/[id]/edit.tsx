@@ -52,16 +52,21 @@ export default function EditArticlePage({ id, ssrError }: EditArticlePageProps) 
         <title>{article ? `Edit: ${article.title}` : 'Edit article'} — Sports Articles</title>
       </Head>
 
-      <div className="mx-auto max-w-3xl px-6 py-10">
-        <Link href={`/article/${id}`} className="text-sm text-slate-600 hover:underline">
+      <div className="mx-auto max-w-[42rem] px-6 py-20 sm:py-24">
+        <Link
+          href={`/article/${id}`}
+          className="rounded-sm text-sm text-muted underline-offset-4 transition-colors hover:text-emphasis hover:underline focus-visible:ring-2 focus-visible:ring-emphasis focus-visible:outline-none"
+        >
           ← Back to article
         </Link>
-        <h1 className="mt-6 mb-8 text-3xl font-semibold tracking-tight">Edit article</h1>
+        <h1 className="mt-10 mb-12 text-4xl font-semibold tracking-tight text-emphasis">
+          Edit article
+        </h1>
 
         {failed ? (
           <p
             role="alert"
-            className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+            className="border border-danger/30 bg-surface px-4 py-3 text-sm text-danger"
           >
             {LOAD_FAILED_MESSAGE}
           </p>

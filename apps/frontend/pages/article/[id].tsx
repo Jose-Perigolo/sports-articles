@@ -42,47 +42,52 @@ export default function ArticlePage({ id, ssrError }: ArticlePageProps) {
         ) : null}
       </Head>
 
-      <div className="mx-auto max-w-3xl px-6 py-10">
-        <Link href="/" className="text-sm text-slate-600 hover:underline">
+      <div className="mx-auto max-w-[42rem] px-6 py-20 sm:py-24">
+        <Link
+          href="/"
+          className="rounded-sm text-sm text-muted underline-offset-4 transition-colors hover:text-emphasis hover:underline focus-visible:ring-2 focus-visible:ring-emphasis focus-visible:outline-none"
+        >
           ← All articles
         </Link>
 
         {failed ? (
           <p
             role="alert"
-            className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+            className="mt-8 border border-danger/30 bg-surface px-4 py-3 text-sm text-danger"
           >
             {LOAD_FAILED_MESSAGE}
           </p>
         ) : null}
 
         {article ? (
-          <article className="mt-6">
-            <h1 className="text-3xl font-semibold tracking-tight text-balance">{article.title}</h1>
+          <article className="mt-10">
+            <h1 className="text-4xl leading-tight font-semibold tracking-tight text-balance text-emphasis">
+              {article.title}
+            </h1>
 
             {published ? (
               <time
                 dateTime={article.createdAt ?? undefined}
-                className="mt-2 block text-xs tracking-wide text-slate-500 uppercase"
+                className="mt-4 block text-xs tracking-[0.08em] text-muted uppercase"
               >
                 {published}
               </time>
             ) : null}
 
             {article.imageUrl ? (
-              <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-lg bg-slate-100">
+              <div className="relative mt-10 aspect-[16/9] overflow-hidden bg-ground">
                 <Image
                   src={article.imageUrl}
                   alt=""
                   fill
                   priority
-                  sizes="(max-width: 768px) 100vw, 768px"
+                  sizes="(max-width: 768px) 100vw, 672px"
                   className="object-cover"
                 />
               </div>
             ) : null}
 
-            <div className="mt-6 flex flex-col gap-4 text-slate-800">
+            <div className="mt-10 flex flex-col gap-5 text-lg text-ink">
               {paragraphs.map((paragraph, index) => (
                 <p key={index} className="leading-relaxed">
                   {paragraph}
@@ -93,16 +98,16 @@ export default function ArticlePage({ id, ssrError }: ArticlePageProps) {
             {deleteError ? (
               <p
                 role="alert"
-                className="mt-8 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                className="mt-8 border border-danger/30 bg-surface px-4 py-3 text-sm text-danger"
               >
                 {deleteError}
               </p>
             ) : null}
 
-            <div className="mt-8 flex items-center gap-3 border-t border-slate-200 pt-6">
+            <div className="mt-14 flex items-center gap-6 border-t border-rule pt-8">
               <Link
                 href={`/article/${article.id}/edit`}
-                className="inline-flex rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:outline-none"
+                className="inline-flex border border-rule px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-emphasis hover:text-emphasis focus-visible:ring-2 focus-visible:ring-emphasis focus-visible:outline-none"
               >
                 Edit
               </Link>
@@ -115,7 +120,7 @@ export default function ArticlePage({ id, ssrError }: ArticlePageProps) {
                   });
                 }}
                 disabled={deletingId === article.id}
-                className="inline-flex rounded-md border border-red-200 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-700 focus-visible:outline-none disabled:opacity-60"
+                className="-mx-1 rounded-sm px-1 py-1.5 text-sm font-medium text-muted underline-offset-4 transition-colors hover:text-danger hover:underline focus-visible:text-danger focus-visible:ring-2 focus-visible:ring-danger focus-visible:outline-none disabled:opacity-60"
               >
                 {deletingId === article.id ? 'Deleting…' : 'Delete'}
               </button>

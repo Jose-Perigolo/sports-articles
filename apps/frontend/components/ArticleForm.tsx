@@ -59,18 +59,18 @@ export function ArticleForm({
   });
 
   return (
-    <form onSubmit={(event) => void submit(event)} className="flex flex-col gap-5" noValidate>
+    <form onSubmit={(event) => void submit(event)} className="flex flex-col gap-7" noValidate>
       {formError ? (
         <p
           role="alert"
-          className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          className="border border-danger/30 bg-surface px-4 py-3 text-sm text-danger"
         >
           {formError}
         </p>
       ) : null}
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="title" className="text-sm font-medium text-slate-700">
+        <label htmlFor="title" className="text-sm font-medium text-emphasis">
           Title
         </label>
         <input
@@ -82,18 +82,18 @@ export function ArticleForm({
           defaultValue={defaultValues.title}
           aria-invalid={Boolean(errors.title)}
           aria-describedby={errors.title ? 'title-error' : undefined}
-          className="rounded-md border border-slate-300 px-3 py-2 focus:border-slate-500 focus:outline-none"
+          className="border border-rule bg-surface px-3.5 py-2.5 text-ink focus:border-emphasis focus:outline-none"
           {...register('title')}
         />
         {errors.title ? (
-          <p id="title-error" role="alert" className="text-sm text-red-700">
+          <p id="title-error" role="alert" className="text-sm text-danger">
             {errors.title.message}
           </p>
         ) : null}
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="content" className="text-sm font-medium text-slate-700">
+        <label htmlFor="content" className="text-sm font-medium text-emphasis">
           Content
         </label>
         <textarea
@@ -102,19 +102,19 @@ export function ArticleForm({
           defaultValue={defaultValues.content}
           aria-invalid={Boolean(errors.content)}
           aria-describedby={errors.content ? 'content-error' : undefined}
-          className="rounded-md border border-slate-300 px-3 py-2 focus:border-slate-500 focus:outline-none"
+          className="border border-rule bg-surface px-3.5 py-2.5 text-ink focus:border-emphasis focus:outline-none"
           {...register('content')}
         />
         {errors.content ? (
-          <p id="content-error" role="alert" className="text-sm text-red-700">
+          <p id="content-error" role="alert" className="text-sm text-danger">
             {errors.content.message}
           </p>
         ) : null}
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="imageUrl" className="text-sm font-medium text-slate-700">
-          Image URL <span className="font-normal text-slate-500">(optional)</span>
+        <label htmlFor="imageUrl" className="text-sm font-medium text-emphasis">
+          Image URL <span className="font-normal text-muted">(optional)</span>
         </label>
         <input
           id="imageUrl"
@@ -123,11 +123,11 @@ export function ArticleForm({
           defaultValue={defaultValues.imageUrl}
           aria-invalid={Boolean(errors.imageUrl)}
           aria-describedby={errors.imageUrl ? 'imageUrl-error' : undefined}
-          className="rounded-md border border-slate-300 px-3 py-2 focus:border-slate-500 focus:outline-none"
+          className="border border-rule bg-surface px-3.5 py-2.5 text-ink focus:border-emphasis focus:outline-none"
           {...register('imageUrl')}
         />
         {errors.imageUrl ? (
-          <p id="imageUrl-error" role="alert" className="text-sm text-red-700">
+          <p id="imageUrl-error" role="alert" className="text-sm text-danger">
             {errors.imageUrl.message}
           </p>
         ) : null}
@@ -137,11 +137,14 @@ export function ArticleForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60"
+          className="inline-flex bg-emphasis px-5 py-2.5 text-sm font-medium text-surface transition-colors hover:bg-ink focus-visible:ring-2 focus-visible:ring-emphasis focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60"
         >
           {isSubmitting ? 'Saving…' : submitLabel}
         </button>
-        <Link href={cancelHref} className="text-sm text-slate-600 hover:underline">
+        <Link
+          href={cancelHref}
+          className="rounded-sm text-sm text-muted underline-offset-4 transition-colors hover:text-emphasis hover:underline focus-visible:ring-2 focus-visible:ring-emphasis focus-visible:outline-none"
+        >
           Cancel
         </Link>
       </div>
