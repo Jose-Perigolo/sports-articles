@@ -4,6 +4,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import type { NormalizedCacheObject } from '@apollo/client';
 import { ArticleCard } from '../components/ArticleCard';
+import { useDeleteArticle } from '../lib/useDeleteArticle';
 import {
   ArticlesDocument,
   type ArticlesQuery,
@@ -27,12 +28,25 @@ export default function Home({ ssrError }: HomeProps) {
     variables: { limit: PAGE_SIZE, offset: 0 },
   });
 
+  const { remove, deletingId, error: deleteError } = useDeleteArticle();
+
   const articles = data?.articles ?? [];
   const [exhausted, setExhausted] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const inFlight = useRef(false);
+  const initialPageChecked = useRef(false);
 
-  const hasMore = !exhausted && articles.length >= PAGE_SIZE;
+  // hasMore must not depend on articles.length. Deleting from a partially-loaded list drops
+  // it below PAGE_SIZE, and a length-based guard would retire the sentinel with articles
+  // still unfetched. Whether a page came back short is the only signal that the list ended,
+  // including the initial SSR page.
+  const hasMore = !exhausted;
+
+  useEffect(() => {
+    if (initialPageChecked.current || !data) return;
+    initialPageChecked.current = true;
+    if (data.articles.length < PAGE_SIZE) setExhausted(true);
+  }, [data]);
 
   const loadMore = useCallback(async () => {
     if (inFlight.current) return;
@@ -101,6 +115,15 @@ export default function Home({ ssrError }: HomeProps) {
           </p>
         ) : null}
 
+        {deleteError ? (
+          <p
+            role="alert"
+            className="mb-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          >
+            {deleteError}
+          </p>
+        ) : null}
+
         {!failed && articles.length === 0 ? (
           <p className="rounded-md border border-slate-200 bg-white px-4 py-8 text-center text-slate-600">
             No articles yet.{' '}
@@ -112,7 +135,12 @@ export default function Home({ ssrError }: HomeProps) {
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {articles.map((article) => (
-            <ArticleCard key={article.id} article={article} />
+            <ArticleCard
+              key={article.id}
+              article={article}
+              onDelete={(target) => void remove(target)}
+              deleting={deletingId === article.id}
+            />
           ))}
         </div>
 

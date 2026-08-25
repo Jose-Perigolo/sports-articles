@@ -2,6 +2,7 @@ import type { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import type { NormalizedCacheObject } from '@apollo/client';
 import {
   ArticleDocument,
@@ -11,6 +12,7 @@ import {
 } from '../../graphql/generated/graphql';
 import { APOLLO_STATE_PROP_NAME, createApolloClient } from '../../lib/apolloClient';
 import { formatDate } from '../../lib/formatDate';
+import { useDeleteArticle } from '../../lib/useDeleteArticle';
 
 const LOAD_FAILED_MESSAGE =
   'Could not load this article. Check that the API is running, then reload this page.';
@@ -22,7 +24,9 @@ interface ArticlePageProps {
 }
 
 export default function ArticlePage({ id, ssrError }: ArticlePageProps) {
+  const router = useRouter();
   const { data, error } = useArticleQuery({ variables: { id } });
+  const { remove, deletingId, error: deleteError } = useDeleteArticle();
   const article = data?.article ?? null;
   const failed = ssrError || Boolean(error);
 
@@ -86,13 +90,35 @@ export default function ArticlePage({ id, ssrError }: ArticlePageProps) {
               ))}
             </div>
 
-            <div className="mt-8 border-t border-slate-200 pt-6">
+            {deleteError ? (
+              <p
+                role="alert"
+                className="mt-8 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+              >
+                {deleteError}
+              </p>
+            ) : null}
+
+            <div className="mt-8 flex items-center gap-3 border-t border-slate-200 pt-6">
               <Link
                 href={`/article/${article.id}/edit`}
-                className="inline-flex rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+                className="inline-flex rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:outline-none"
               >
                 Edit
               </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  void remove(article).then((deleted) => {
+                    // The article is gone from the cache; staying here would render nothing.
+                    if (deleted) return router.push('/');
+                  });
+                }}
+                disabled={deletingId === article.id}
+                className="inline-flex rounded-md border border-red-200 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-700 focus-visible:outline-none disabled:opacity-60"
+              >
+                {deletingId === article.id ? 'Deleting…' : 'Delete'}
+              </button>
             </div>
           </article>
         ) : null}
