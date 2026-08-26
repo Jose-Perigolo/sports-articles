@@ -5,7 +5,7 @@ const TITLE_MAX_LENGTH = 200;
 
 /**
  * Protocol matters as much as shape here. URL.canParse accepts `javascript:`, `data:` and
- * `ftp:`, and this value is handed straight to the frontend's image renderer — restricting it
+ * `ftp:`, and this value is handed straight to the frontend's image renderer, so restricting it
  * to http(s) is what lets `images.remotePatterns` stay permissive about the host.
  */
 function isHttpUrl(value: string): boolean {

@@ -12,7 +12,7 @@ async function seed(): Promise<void> {
 
     // Hard delete, not softDelete: a re-run must clear rows the reviewer soft-deleted
     // through the UI too, or they accumulate invisibly. repository.delete({}) is not an
-    // option — TypeORM 1.x rejects empty criteria.
+    // option; TypeORM 1.x rejects empty criteria.
     await repository.createQueryBuilder().delete().from(SportsArticle).execute();
 
     const rows = articles.map((article) =>

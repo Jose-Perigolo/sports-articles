@@ -8,12 +8,12 @@
  * exactly as supplied.
  *
  * These were resolved once, at author time, from the Unsplash Search API by matching each
- * photo's own alt_description against the article's sport — the `alt` field below is that
+ * photo's own alt_description against the article's sport; the `alt` field below is that
  * description, kept as provenance. The application needs no credentials and makes no request
  * to Unsplash: images.unsplash.com serves these URLs unauthenticated, exactly as the fixture's
  * originals did. Do not add an API key, a dependency, or a lookup to the seed.
  *
- * The sizing parameters matter — the fixture's unparameterised originals were 1.6-6.2 MB each,
+ * The sizing parameters matter: the fixture's unparameterised originals were 1.6-6.2 MB each,
  * where these are 66-348 KB.
  */
 export interface ImagePick {

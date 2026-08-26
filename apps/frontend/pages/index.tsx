@@ -100,7 +100,7 @@ export default function Home({ ssrError }: HomeProps) {
                 Sports Articles
               </h1>
               <p className="mt-4 text-lg leading-relaxed text-muted">
-                Reporting from across the sporting week —{' '}
+                Reporting from across the sporting week,{' '}
                 <span className="text-emphasis">newest first</span>.
               </p>
             </div>

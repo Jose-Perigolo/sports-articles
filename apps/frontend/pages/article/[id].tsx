@@ -36,7 +36,7 @@ export default function ArticlePage({ id, ssrError }: ArticlePageProps) {
   return (
     <>
       <Head>
-        <title>{article ? `${article.title} — Sports Articles` : 'Sports Articles'}</title>
+        <title>{article ? `${article.title} | Sports Articles` : 'Sports Articles'}</title>
         {article ? (
           <meta name="description" content={article.content.split('\n\n')[0].slice(0, 155)} />
         ) : null}
@@ -145,7 +145,7 @@ export const getServerSideProps: GetServerSideProps<ArticlePageProps> = async (c
       variables: { id },
     });
 
-    // A null article means missing or soft-deleted — a real 404. This is deliberately not
+    // A null article means missing or soft-deleted: a real 404. This is deliberately not
     // the same branch as the catch below, which means the backend is unreachable.
     if (!data.article) return { notFound: true };
 

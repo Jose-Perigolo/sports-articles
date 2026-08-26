@@ -60,7 +60,7 @@ async function main(): Promise<void> {
 
   const server = new ApolloServer<GraphQLContext>({
     // A Federation 2 subgraph: buildSubgraphSchema adds _service and _entities and honours
-    // the @key directive. Purely additive — the shape of SportsArticle is unchanged for
+    // the @key directive. Purely additive: the shape of SportsArticle is unchanged for
     // clients querying this service directly.
     schema: buildSubgraphSchema([{ typeDefs: parse(typeDefs), resolvers }]),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],

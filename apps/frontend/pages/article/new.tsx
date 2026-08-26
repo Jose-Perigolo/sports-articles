@@ -21,7 +21,7 @@ export default function NewArticlePage() {
       update(cache) {
         // With keyArgs: false the merged articles list is a single ROOT_QUERY field that a
         // create writes nothing into, so it has to be dropped and refetched. Update needs no
-        // equivalent — Apollo normalises by id.
+        // equivalent; Apollo normalises by id.
         cache.evict({ id: 'ROOT_QUERY', fieldName: 'articles' });
         cache.gc();
       },
@@ -34,7 +34,7 @@ export default function NewArticlePage() {
   return (
     <>
       <Head>
-        <title>New article — Sports Articles</title>
+        <title>New article | Sports Articles</title>
       </Head>
 
       <div className="mx-auto max-w-[42rem] px-6 py-20 sm:py-24">

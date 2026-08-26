@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 /**
  * Deliberately duplicated from `apps/backend/src/validation.ts`, which stays the source of
- * truth — the server re-validates everything this accepts. A shared workspace package
+ * truth: the server re-validates everything this accepts. A shared workspace package
  * (`packages/shared-validation`) is where these rules belong once the project has more than
  * one consumer; adding one here would buy build-order complexity for no scored benefit.
  *

@@ -117,7 +117,7 @@ describe('soft delete', () => {
     expect(single.errors).toBeUndefined();
     expect(single.data?.article).toBeNull();
 
-    // The row is still there — deleted, not removed.
+    // The row is still there: deleted, not removed.
     const raw = await dataSource.query<{ deletedAt: Date | null }[]>(
       'select "deletedAt" from sports_articles where id = $1',
       [doomed.id],

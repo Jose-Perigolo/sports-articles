@@ -8,7 +8,7 @@ import prettier from 'eslint-config-prettier';
 const compat = new FlatCompat({ baseDirectory: dirname(fileURLToPath(import.meta.url)) });
 
 // eslint-config-next ships an eslintrc-style config with no flat entry point, so it comes in
-// through FlatCompat — the same bridge create-next-app@15 generates. Scoped to the frontend so
+// through FlatCompat, the same bridge create-next-app@15 generates. Scoped to the frontend so
 // the backend does not pick up React rules.
 const nextConfigs = compat.extends('next/core-web-vitals').map((config) => ({
   ...config,

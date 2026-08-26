@@ -49,7 +49,7 @@ export default function EditArticlePage({ id, ssrError }: EditArticlePageProps) 
   return (
     <>
       <Head>
-        <title>{article ? `Edit: ${article.title}` : 'Edit article'} — Sports Articles</title>
+        <title>{article ? `Edit: ${article.title}` : 'Edit article'} | Sports Articles</title>
       </Head>
 
       <div className="mx-auto max-w-[42rem] px-6 py-20 sm:py-24">

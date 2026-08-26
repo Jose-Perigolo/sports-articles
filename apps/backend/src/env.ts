@@ -13,7 +13,7 @@ export function loadEnv(): void {
   try {
     process.loadEnvFile(path.join(__dirname, '../.env'));
   } catch {
-    // no .env on disk — fall through to the ambient environment
+    // no .env on disk; fall through to the ambient environment
   }
 }
 

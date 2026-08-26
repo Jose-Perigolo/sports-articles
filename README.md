@@ -2,8 +2,8 @@
 
 A GraphQL API and Next.js client for managing sports articles, built as a pnpm workspace.
 
-- `apps/backend` — TypeScript, Express, Apollo Server v4, TypeORM, Postgres
-- `apps/frontend` — Next.js (Pages Router), Apollo Client, Tailwind
+- `apps/backend`: TypeScript, Express, Apollo Server v4, TypeORM, Postgres
+- `apps/frontend`: Next.js (Pages Router), Apollo Client, Tailwind
 
 ## Demo
 
@@ -16,16 +16,16 @@ cache's merge policy; the control retires when a page comes back short.
 
 Deleting from a partially loaded list: the reference is removed from the merged field before the
 entity is evicted, so paging afterwards neither skips nor duplicates a row. The `window.confirm`
-prompt does fire — it is accepted in the recording but never appears, because headless Chromium
+prompt does fire; it is accepted in the recording but never appears, because headless Chromium
 does not paint native dialogs.
 
 ## Requirements
 
-| Tool    | Version                                                              |
-| ------- | -------------------------------------------------------------------- |
-| Node.js | 24 — the developed-on version (`.nvmrc`); `engines` allows `>=20.19` |
-| pnpm    | 11.x (`packageManager` pins the exact version for Corepack)          |
-| Docker  | required — Postgres runs in the container from `docker-compose.yml`  |
+| Tool    | Version                                                             |
+| ------- | ------------------------------------------------------------------- |
+| Node.js | 24, the developed-on version (`.nvmrc`); `engines` allows `>=20.19` |
+| pnpm    | 11.x (`packageManager` pins the exact version for Corepack)         |
+| Docker  | required; Postgres runs in the container from `docker-compose.yml`  |
 
 ## Setup
 
@@ -44,16 +44,16 @@ pnpm --filter backend db:migrate                # create the schema
 pnpm --filter backend seed                      # 30 articles from docs/data-example.csv
 ```
 
-Each file is read by a different process — the root `.env` by Docker Compose,
-`apps/backend/.env` by the API, `apps/frontend/.env` by Next — and they fail differently.
+Each file is read by a different process: the root `.env` by Docker Compose,
+`apps/backend/.env` by the API, `apps/frontend/.env` by Next, and they fail differently.
 `apps/backend/.env` is the only one strictly required for a default local run: skip it and the
 API exits immediately with `Missing required environment variable DATABASE_URL`. The other two
 have fallbacks that happen to match the defaults here (Compose uses `POSTGRES_PORT=5432`, the
-client uses `http://localhost:4000/graphql`). Copy all three anyway — those fallbacks stop
+client uses `http://localhost:4000/graphql`). Copy all three anyway, because those fallbacks stop
 matching the moment anything moves off its default port or host.
 
 **Port conflicts.** The container publishes on `${POSTGRES_PORT:-5432}`. If something already
-owns 5432 — a native Postgres install is the usual culprit — set `POSTGRES_PORT` in the root
+owns 5432 (a native Postgres install is the usual culprit), set `POSTGRES_PORT` in the root
 `.env` to a free port and change the port in `DATABASE_URL` in `apps/backend/.env` to match.
 Nothing else changes.
 
@@ -88,8 +88,8 @@ pnpm --filter backend seed
 ```
 
 Loads the 30 articles from `docs/data-example.csv` (see the note on that dataset under
-Architecture decisions). Idempotent: it clears the table first — including rows deleted
-through the UI, which are soft-deleted rather than removed — so a second run leaves 30 rows, not 60. `createdAt` comes from the CSV and is date-only, giving three full pages of 10 to scroll
+Architecture decisions). Idempotent: it clears the table first, including rows deleted
+through the UI, which are soft-deleted rather than removed, so a second run leaves 30 rows, not 60. `createdAt` comes from the CSV and is date-only, giving three full pages of 10 to scroll
 through.
 
 ## Scripts
@@ -111,7 +111,7 @@ pnpm test        # backend resolver tests (vitest)
 ```
 
 The suite covers the two behaviours most worth pinning down: validation failures returning
-`BAD_USER_INPUT` with the right `extensions.field`, and soft delete — a deleted article absent
+`BAD_USER_INPUT` with the right `extensions.field`, and soft delete: a deleted article absent
 from `articles`, `null` from `article(id)`, and still present in Postgres with `deletedAt` set.
 
 Tests run against a real database rather than a mocked repository, because soft-delete exclusion
@@ -122,7 +122,7 @@ a `<database>_test` sibling so it never touches the rows you are looking at in t
 ## Continuous integration
 
 `.github/workflows/ci.yml` runs install, lint, typecheck, migrations, seed, build and the tests
-against a `services: postgres` container — which also proves the migration applies cleanly in an
+against a `services: postgres` container, which also proves the migration applies cleanly in an
 environment neither the author nor the reviewer controls.
 
 ## GraphQL API
@@ -150,7 +150,7 @@ carrying `extensions.field` so the client can attach the message to the right in
 
 - **The example dataset is seeded verbatim, except for the images.** `docs/data-example.csv`
   provides 30 rows. Titles, content and `createdAt` are stored exactly as supplied, including
-  the truncated single-sentence bodies — the copy describes real clubs and athletes, so
+  the truncated single-sentence bodies, because the copy describes real clubs and athletes, so
   extending it would mean inventing quotes and results.
 
   The supplied `imageUrl` values were not usable: 17 of the 30 answer `404` (verified by ranged
@@ -160,7 +160,7 @@ carrying `extensions.field` so the client can attach the message to the right in
   is replaced wholesale with topic-matched photographs resolved once at author time and pinned
   in `apps/backend/src/image-picks.ts`. Each was chosen by matching the photo's own
   `alt_description` against the article's sport; that description is kept alongside the URL as
-  provenance. The application needs no Unsplash credentials and makes no request to Unsplash —
+  provenance. The application needs no Unsplash credentials and makes no request to Unsplash:
   `images.unsplash.com` serves the URLs unauthenticated, exactly as the fixture's originals did.
   The originals are preserved unmodified in the committed CSV.
 
@@ -172,7 +172,7 @@ carrying `extensions.field` so the client can attach the message to the right in
   with another row, which is exactly what the `createdAt DESC, id DESC` ordering in `articles`
   exists to make total.
 
-- **TypeORM, per the brief's recommendation — and `@DeleteDateColumn` is what earns it.**
+- **TypeORM, per the brief's recommendation, and `@DeleteDateColumn` is what earns it.**
   `deleteArticle` calls `repository.softDelete(id)`, and every default `find`/`findOneBy`
   excludes soft-deleted rows automatically. The brief's `deletedAt` field maps onto it exactly.
   Prisma would need a hand-written `deletedAt: null` at every call site.
@@ -188,7 +188,7 @@ carrying `extensions.field` so the client can attach the message to the right in
 
 - **A fresh `ApolloClient` per request inside each `getServerSideProps`**, no `withApollo` HOC.
   The cache is handed to the page as `initialApolloState` and the browser hydrates one
-  long-lived client from it. Same invariant as the HOC — no client leaking across requests —
+  long-lived client from it. Same invariant as the HOC (no client leaking across requests),
   with less indirection.
 
 - **The `InMemoryCache` declares the `articles` pagination policy by hand** (`keyArgs: false`
@@ -203,20 +203,20 @@ carrying `extensions.field` so the client can attach the message to the right in
   reference first.
 
 - **Dates are ISO strings, not a custom scalar**, matching the brief's "Date string" wording.
-  They are mapped explicitly on the way out — handing graphql-js a `Date` for a `String` field
+  They are mapped explicitly on the way out, because handing graphql-js a `Date` for a `String` field
   serialises it as a millisecond timestamp, silently.
 
 - **`imageUrl` is restricted to `http`/`https` at the API, which is what lets the frontend's
   `images.remotePatterns` stay permissive about the host.** The two are a pair. `next/image`
   answers 400 from its optimizer for any host missing from `remotePatterns`, so a list that
   renders perfectly from the seed would break on the first article a user creates with an image
-  from anywhere else — the fix is to allow any host over http(s). That is only safe because the
+  from anywhere else, so the fix is to allow any host over http(s). That is only safe because the
   backend rejects every other scheme (`javascript:`, `data:`, `ftp:`, `file:`), which a bare URL
   parse would happily accept.
 
 - **The frontend zod schema duplicates the backend's rules rather than importing them.**
-  `apps/frontend/lib/articleSchema.ts` mirrors `apps/backend/src/validation.ts` — same length
-  limit, same messages, same http(s) restriction — and the server re-validates everything
+  `apps/frontend/lib/articleSchema.ts` mirrors `apps/backend/src/validation.ts`: same length
+  limit, same messages, same http(s) restriction, and the server re-validates everything
   regardless, so the copy is a UX affordance, not the enforcement point. At scale this belongs
   in a `packages/shared-validation` workspace package consumed by both apps; with two consumers
   and one schema, that would buy build-order complexity for no benefit here.
@@ -227,7 +227,7 @@ carrying `extensions.field` so the client can attach the message to the right in
 
 - **The backend compiles with `module`/`moduleResolution: node16`.** `@apollo/server` publishes
   `./express4` only through its `exports` map, with no `typesVersions` fallback, so the
-  mandated import cannot resolve under node10 resolution. Output stays CommonJS — required for
+  mandated import cannot resolve under node10 resolution. Output stays CommonJS, required for
   decorator metadata, and it keeps `__dirname` available for loading `schema.graphql`.
 
 ### How this would grow
@@ -238,7 +238,7 @@ This service is deliberately not layered, and the trigger for changing that is w
 business logic across `resolvers.ts`, `validation.ts`, `mappers.ts` and `errors.ts`. A use-case
 layer, ports and DTO mappers would each have exactly one caller today, so they would be
 indirection with nothing on the other side of it. The resolver is the application boundary until
-a **second entrypoint** exists — a background worker, or a REST admin endpoint invoking the same
+a **second entrypoint** exists: a background worker, or a REST admin endpoint invoking the same
 logic. That is the trigger. At that point `createArticle`'s validate-then-persist body moves
 behind a use case the resolver and the worker both call, and the repository becomes a port so
 the use case stops naming TypeORM. Not before.
@@ -246,12 +246,12 @@ the use case stops naming TypeORM. Not before.
 **Breadth or depth decides the answer.** These are different problems and they pull in opposite
 directions:
 
-- _More features_ — identity, membership, chat — is a **modularity** problem. Each is its own
+- _More features_ (identity, membership, chat) is a **modularity** problem. Each is its own
   bounded context, owning its own data, exposed as its own service and composed as federation
   subgraphs. Not shared tables, and not a `userId` column bolted onto `SportsArticle`. The
   article service should not learn what a subscription is.
-- _Deeper rules inside one context_ — membership proration and grace periods, editorial embargo
-  by region — is a **domain** problem, and that is where use cases and aggregates genuinely earn
+- _Deeper rules inside one context_ (membership proration and grace periods, editorial embargo
+  by region) is a **domain** problem, and that is where use cases and aggregates genuinely earn
   their place. In that context, though, not spread across the whole app. Articles has no
   invariant remotely that thick: its rules are "title and content are required" and "deleted
   articles stay hidden but recoverable".
@@ -264,13 +264,13 @@ about what an article is. To be plain about the boundary: there is **no gateway 
 supergraph composition in this repo**. A second subgraph and a composed supergraph are the next
 step, not something already done here. This is the articles service, not the estate.
 
-**What "built for scale" already means here** — specific, not aspirational:
+**What "built for scale" already means here**, specific rather than aspirational:
 
 - `articles` takes `limit`/`offset` with a server-side cap of 50, so no client can ask for the
   whole table.
 - The `(deletedAt, createdAt)` composite index matches the only access pattern the API has:
   live rows, newest first.
-- Ordering is `createdAt DESC, id DESC`, making offset paging total — it cannot skip or
+- Ordering is `createdAt DESC, id DESC`, making offset paging total: it cannot skip or
   duplicate a row under ties. That is load-bearing rather than theoretical: 22 of the 30 seeded
   rows share a date with another row, because the supplied fixture's `createdAt` is date-only.
 - The client cache declares the pagination policy up front, and delete removes the reference

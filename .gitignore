@@ -18,7 +18,7 @@ pnpm-debug.log*
 # Generated GraphQL types are committed on purpose (see apps/frontend/codegen.ts):
 # a reviewer must be able to build after a cold `pnpm install`, with no backend running.
 
-# Internal planning documents — kept locally, never published
+# Internal planning documents: kept locally, never published
 /CLAUDE.md
 /docs/build-plan.md
 /docs/test-brief.md

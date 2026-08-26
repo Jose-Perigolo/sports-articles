@@ -8,7 +8,7 @@ import { Init1787653372235 } from '../migrations/1787653372235-Init';
 /**
  * Listed explicitly rather than globbed like the runtime DataSource does. A glob makes TypeORM
  * require() the raw .ts file at runtime, outside vitest's transform, which fails with
- * "Cannot use import statement outside a module". New migrations must be added here — the
+ * "Cannot use import statement outside a module". New migrations must be added here; the
  * suite fails loudly against a stale schema rather than passing quietly.
  */
 const MIGRATIONS = [Init1787653372235];

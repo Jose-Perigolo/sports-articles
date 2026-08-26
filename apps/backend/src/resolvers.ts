@@ -32,8 +32,8 @@ interface ArticleReference {
 export const resolvers = {
   SportsArticle: {
     /**
-     * Federation entity resolution. Deliberately the same lookup as Query.article — same
-     * uuid guard, same mapper — so a gateway and a direct client cannot disagree about what
+     * Federation entity resolution. Deliberately the same lookup as Query.article: same
+     * uuid guard, same mapper, so a gateway and a direct client cannot disagree about what
      * an article is.
      */
     async __resolveReference(
@@ -75,7 +75,7 @@ export const resolvers = {
     ): Promise<SportsArticleResponse | null> {
       // Postgres raises "invalid input syntax for type uuid" for anything that is not a
       // uuid, and a page routed straight from the URL will hand us exactly that. No such
-      // row can exist, so the honest answer is null — which the frontend turns into a 404.
+      // row can exist, so the honest answer is null, which the frontend turns into a 404.
       if (!UUID_PATTERN.test(id)) return null;
 
       const article = await articles.findOneBy({ id });

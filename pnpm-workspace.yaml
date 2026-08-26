@@ -18,7 +18,7 @@ onlyBuiltDependencies:
   - sharp
   - unrs-resolver
 
-# Auto-managed by pnpm (release-cooldown exclusions) — do not hand-edit.
+# Auto-managed by pnpm (release-cooldown exclusions). Do not hand-edit.
 minimumReleaseAgeExclude:
   - '@typescript-eslint/eslint-plugin@8.68.0'
   - '@typescript-eslint/parser@8.68.0'
