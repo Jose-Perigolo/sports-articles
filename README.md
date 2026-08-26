@@ -5,6 +5,20 @@ A GraphQL API and Next.js client for managing sports articles, built as a pnpm w
 - `apps/backend` — TypeScript, Express, Apollo Server v4, TypeORM, Postgres
 - `apps/frontend` — Next.js (Pages Router), Apollo Client, Tailwind
 
+## Demo
+
+![Infinite scroll](docs/media/infinite-scroll.gif)
+
+The list server-renders the first 10 articles, then `fetchMore` appends each page through the
+cache's merge policy; the control retires when a page comes back short.
+
+![Delete](docs/media/delete.gif)
+
+Deleting from a partially loaded list: the reference is removed from the merged field before the
+entity is evicted, so paging afterwards neither skips nor duplicates a row. The `window.confirm`
+prompt does fire — it is accepted in the recording but never appears, because headless Chromium
+does not paint native dialogs.
+
 ## Requirements
 
 | Tool    | Version                                                              |
