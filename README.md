@@ -215,3 +215,50 @@ carrying `extensions.field` so the client can attach the message to the right in
   `./express4` only through its `exports` map, with no `typesVersions` fallback, so the
   mandated import cannot resolve under node10 resolution. Output stays CommonJS — required for
   decorator metadata, and it keeps `__dirname` available for loading `schema.graphql`.
+
+### How this would grow
+
+This service is deliberately not layered, and the trigger for changing that is worth naming.
+
+**Why this shape.** There is one transport (GraphQL), one datastore, and roughly 210 lines of
+business logic across `resolvers.ts`, `validation.ts`, `mappers.ts` and `errors.ts`. A use-case
+layer, ports and DTO mappers would each have exactly one caller today, so they would be
+indirection with nothing on the other side of it. The resolver is the application boundary until
+a **second entrypoint** exists — a background worker, or a REST admin endpoint invoking the same
+logic. That is the trigger. At that point `createArticle`'s validate-then-persist body moves
+behind a use case the resolver and the worker both call, and the repository becomes a port so
+the use case stops naming TypeORM. Not before.
+
+**Breadth or depth decides the answer.** These are different problems and they pull in opposite
+directions:
+
+- _More features_ — identity, membership, chat — is a **modularity** problem. Each is its own
+  bounded context, owning its own data, exposed as its own service and composed as federation
+  subgraphs. Not shared tables, and not a `userId` column bolted onto `SportsArticle`. The
+  article service should not learn what a subscription is.
+- _Deeper rules inside one context_ — membership proration and grace periods, editorial embargo
+  by region — is a **domain** problem, and that is where use cases and aggregates genuinely earn
+  their place. In that context, though, not spread across the whole app. Articles has no
+  invariant remotely that thick: its rules are "title and content are required" and "deleted
+  articles stay hidden but recoverable".
+
+**Where this service already sits.** It is a Federation 2 subgraph today: the schema is built
+with `buildSubgraphSchema`, `schema.graphql` carries `@link` to the federation spec and
+`@key(fields: "id")` on `SportsArticle`, and `__resolveReference` resolves entities through the
+same uuid guard and mapper as `Query.article`, so a gateway and a direct client cannot disagree
+about what an article is. To be plain about the boundary: there is **no gateway and no
+supergraph composition in this repo**. A second subgraph and a composed supergraph are the next
+step, not something already done here. This is the articles service, not the estate.
+
+**What "built for scale" already means here** — specific, not aspirational:
+
+- `articles` takes `limit`/`offset` with a server-side cap of 50, so no client can ask for the
+  whole table.
+- The `(deletedAt, createdAt)` composite index matches the only access pattern the API has:
+  live rows, newest first.
+- Ordering is `createdAt DESC, id DESC`, making offset paging total — it cannot skip or
+  duplicate a row under ties. That is load-bearing rather than theoretical: 22 of the 30 seeded
+  rows share a date with another row, because the supplied fixture's `createdAt` is date-only.
+- The client cache declares the pagination policy up front, and delete removes the reference
+  from the merged list before evicting the entity, so infinite scroll and delete compose without
+  extra bookkeeping in either feature.
