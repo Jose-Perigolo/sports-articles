@@ -3,9 +3,11 @@ import { readFileSync } from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import { ApolloServer } from '@apollo/server';
+import { buildSubgraphSchema } from '@apollo/subgraph';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import cors from 'cors';
+import { parse } from 'graphql';
 import express from 'express';
 import { createContext, GraphQLContext } from './context';
 import { dataSource } from './data-source';
@@ -57,8 +59,10 @@ async function main(): Promise<void> {
   const httpServer = http.createServer(app);
 
   const server = new ApolloServer<GraphQLContext>({
-    typeDefs,
-    resolvers,
+    // A Federation 2 subgraph: buildSubgraphSchema adds _service and _entities and honours
+    // the @key directive. Purely additive — the shape of SportsArticle is unchanged for
+    // clients querying this service directly.
+    schema: buildSubgraphSchema([{ typeDefs: parse(typeDefs), resolvers }]),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
   await server.start();

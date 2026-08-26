@@ -38,6 +38,9 @@ importers:
       '@apollo/server':
         specifier: ^4.13.0
         version: 4.13.0(graphql@16.14.2)(supports-color@7.2.0)
+      '@apollo/subgraph':
+        specifier: ^2.14.4
+        version: 2.14.4(graphql@16.14.2)
       cors:
         specifier: ^2.8.6
         version: 2.8.6
@@ -166,6 +169,12 @@ packages:
       subscriptions-transport-ws:
         optional: true
 
+  '@apollo/federation-internals@2.14.4':
+    resolution: {integrity: sha512-z8h/T0N4HROGY8o/l3WQZpj3OKNuPRt14Onm38aaksthDaw8z/nhz426USJVa50ZRU19LIN3RY28dE0tcTmCAQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      graphql: ^16.5.0
+
   '@apollo/protobufjs@1.2.8':
     resolution: {integrity: sha512-r7xNeUqZX+eBBEmyvaPw0/cSz6zgf5jdH8mjUz8ynKpNs/GU7vi2T7sNcZINk2ZID7wwjG91FCgdpCrQuJ8rzA==}
     hasBin: true
@@ -182,6 +191,12 @@ packages:
     deprecated: Apollo Server v4 is end-of-life since January 26, 2026. As long as you are already using a non-EOL version of Node.js, upgrading to v5 should take only a few minutes. See https://www.apollographql.com/docs/apollo-server/previous-versions for details.
     peerDependencies:
       graphql: ^16.6.0
+
+  '@apollo/subgraph@2.14.4':
+    resolution: {integrity: sha512-voALjXu3aOp2vq3LXGom2yWgG/wDmH2CMuPrZVxG/TkqcNYFzmlESC4E/XI18qfGqnvWGjMckQ2EgwRwmLaJoQ==}
+    engines: {node: '>=14.15.0'}
+    peerDependencies:
+      graphql: ^16.5.0
 
   '@apollo/usage-reporting-protobuf@4.1.2':
     resolution: {integrity: sha512-aTnAD41RYz0d5dawlyR5Iclkgzx0Xb0njUJmEfvZ6pS4f4HU8wCYyctPpWat/HWp2PmRwDfX5R1k4uVcDKZ4xA==}
@@ -1572,6 +1587,9 @@ packages:
 
   '@types/serve-static@1.15.10':
     resolution: {integrity: sha512-tRs1dB+g8Itk72rlSI2ZrW6vZg0YrLI81iQSTkMmOqnqCaNr/8Ek4VwWcN5vZgCYWbg/JJSGBlUaYGAOP73qBw==}
+
+  '@types/uuid@9.0.8':
+    resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
@@ -2967,6 +2985,10 @@ packages:
 
   jose@5.10.0:
     resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
+
+  js-levenshtein@1.1.6:
+    resolution: {integrity: sha512-X2BB11YZtrRqY4EnQcLX5Rh373zbK4alC1FW7D7MBhL2gtcC17cTnr6DmfHZeS0s2rTHjUTMMHfG7gO8SSdw+g==}
+    engines: {node: '>=0.10.0'}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -4435,6 +4457,14 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
+  '@apollo/federation-internals@2.14.4(graphql@16.14.2)':
+    dependencies:
+      '@types/uuid': 9.0.8
+      chalk: 4.1.2
+      graphql: 16.14.2
+      js-levenshtein: 1.1.6
+      uuid: 9.0.1
+
   '@apollo/protobufjs@1.2.8':
     dependencies:
       '@protobufjs/aspromise': 1.1.2
@@ -4489,6 +4519,12 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
+
+  '@apollo/subgraph@2.14.4(graphql@16.14.2)':
+    dependencies:
+      '@apollo/cache-control-types': 1.0.3(graphql@16.14.2)
+      '@apollo/federation-internals': 2.14.4(graphql@16.14.2)
+      graphql: 16.14.2
 
   '@apollo/usage-reporting-protobuf@4.1.2':
     dependencies:
@@ -5871,6 +5907,8 @@ snapshots:
       '@types/http-errors': 2.0.5
       '@types/node': 24.13.3
       '@types/send': 0.17.6
+
+  '@types/uuid@9.0.8': {}
 
   '@types/ws@8.18.1':
     dependencies:
@@ -7507,6 +7545,8 @@ snapshots:
   jiti@2.7.0: {}
 
   jose@5.10.0: {}
+
+  js-levenshtein@1.1.6: {}
 
   js-tokens@4.0.0: {}
 

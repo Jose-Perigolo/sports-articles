@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { ApolloServer } from '@apollo/server';
+import { buildSubgraphSchema } from '@apollo/subgraph';
+import { parse } from 'graphql';
 import type { DataSource } from 'typeorm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { GraphQLContext } from './context';
@@ -9,7 +11,11 @@ import { resolvers } from './resolvers';
 import { createTestDataSource, ensureTestDatabase, testDatabaseUrl } from './test-support/database';
 
 const typeDefs = readFileSync(path.join(__dirname, '..', 'schema.graphql'), 'utf8');
-const server = new ApolloServer<GraphQLContext>({ typeDefs, resolvers });
+// Built the same way as src/server.ts: a plain ApolloServer would reject the schema's
+// federation directives, and the tests should exercise the schema the service actually serves.
+const server = new ApolloServer<GraphQLContext>({
+  schema: buildSubgraphSchema([{ typeDefs: parse(typeDefs), resolvers }]),
+});
 
 let dataSource: DataSource;
 
@@ -123,6 +129,32 @@ describe('soft delete', () => {
     const repository = dataSource.getRepository(SportsArticle);
     expect(await repository.count()).toBe(1);
     expect(await repository.count({ withDeleted: true })).toBe(2);
+  });
+
+  it('resolves an entity reference through the same lookup as article(id)', async () => {
+    const article = await createArticle('Federated');
+
+    const result = await execute(
+      `query Entities($reps: [_Any!]!) {
+         _entities(representations: $reps) { ... on SportsArticle { id title } }
+       }`,
+      { reps: [{ __typename: 'SportsArticle', id: article.id }] },
+    );
+
+    expect(result.errors).toBeUndefined();
+    expect(result.data?._entities).toEqual([{ id: article.id, title: 'Federated' }]);
+  });
+
+  it('returns null for an entity reference that is not a uuid', async () => {
+    const result = await execute(
+      `query Entities($reps: [_Any!]!) {
+         _entities(representations: $reps) { ... on SportsArticle { id } }
+       }`,
+      { reps: [{ __typename: 'SportsArticle', id: 'not-a-uuid' }] },
+    );
+
+    expect(result.errors).toBeUndefined();
+    expect(result.data?._entities).toEqual([null]);
   });
 
   it('reports false when the same article is deleted twice', async () => {

@@ -25,7 +25,28 @@ interface UpdateArticleArgs extends ArticleArgs {
   input: unknown;
 }
 
+interface ArticleReference {
+  id: string;
+}
+
 export const resolvers = {
+  SportsArticle: {
+    /**
+     * Federation entity resolution. Deliberately the same lookup as Query.article — same
+     * uuid guard, same mapper — so a gateway and a direct client cannot disagree about what
+     * an article is.
+     */
+    async __resolveReference(
+      reference: ArticleReference,
+      { articles }: GraphQLContext,
+    ): Promise<SportsArticleResponse | null> {
+      if (!UUID_PATTERN.test(reference.id)) return null;
+
+      const article = await articles.findOneBy({ id: reference.id });
+      return article ? toArticleResponse(article) : null;
+    },
+  },
+
   Query: {
     async articles(
       _parent: unknown,
